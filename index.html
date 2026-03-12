@@ -102,8 +102,8 @@ html { margin:0; padding:0; }
       </div>
       <div class="field"><label>Nome Completo</label><input type="text" id="fNome" placeholder="Julia Unger" oninput="renderSig()"></div>
       <div class="field"><label>Fun&ccedil;&atilde;o / Cargo</label><input type="text" id="fFuncao" placeholder="Information Systems Intern" oninput="renderSig()"></div>
-      <div class="field"><label>Telefone Fixo</label><input type="text" id="fTel" placeholder="+55 47 3249 1618" oninput="renderSig()"></div>
       <div class="field"><label>Celular</label><input type="text" id="fCel" placeholder="+55 47 99999 0000" oninput="renderSig()"></div>
+      <div class="field"><label>Telefone Fixo</label><input type="text" id="fTel" placeholder="+55 47 3249 1618" oninput="renderSig()"></div>
       <div class="field"><label>E-mail</label><input type="email" id="fEmail" placeholder="julia@independentbrazil.com" oninput="renderSig()"></div>
       <div class="field"><label>Fax</label><input type="text" id="fFax" placeholder="+55 47 3249 1619" oninput="renderSig()"></div>
       <div class="field field-full"><label>Site</label><input type="url" id="fSite" placeholder="www.independentbrazil.com" oninput="renderSig()"></div>
@@ -306,8 +306,8 @@ function renderSig(){
   var site  =document.getElementById("fSite").value.trim();
 
   var contacts=[];
+  if(cel)  contacts.push({t:"whatsapp",v:cel});
   if(tel)  contacts.push({t:"phone",v:tel});
-  if(cel)  contacts.push({t:"whatsapp",v:cel}); /* ── celular vira whatsapp ── */
   if(email)contacts.push({t:"email",v:email});
   if(fax)  contacts.push({t:"phone",v:fax});
   if(site) contacts.push({t:"web",  v:site});
@@ -352,7 +352,7 @@ function renderSig(){
   ctx.textBaseline="alphabetic";
 
   // Nome
-  ctx.font="400 "+NAME_SZ+"px Helvetica,Arial,sans-serif";
+  ctx.font="700 "+NAME_SZ+"px Helvetica,Arial,sans-serif";
   ctx.fillStyle="#000";
   ctx.fillText(nome, DATA_X, NAME_Y);
 
@@ -423,8 +423,8 @@ function copyHtml(){
   var fax   =document.getElementById("fFax").value.trim();
   var site  =document.getElementById("fSite").value.trim();
   var contacts=[];
+  if(cel)  contacts.push({t:"whatsapp",v:cel});
   if(tel)  contacts.push({t:"phone",v:tel});
-  if(cel)  contacts.push({t:"whatsapp",v:cel}); /* ── celular vira whatsapp ── */
   if(email)contacts.push({t:"email",v:email});
   if(fax)  contacts.push({t:"phone",v:fax});
   if(site) contacts.push({t:"web",  v:site});
@@ -460,7 +460,7 @@ function copyHtml(){
     +'<tr valign="middle">'
     +'<td style="padding:15px 20px 15px 15px;">'+photoCell+'</td>'
     +'<td style="padding:15px 30px 15px 0;vertical-align:top;">'
-      +'<div style="font-size:16px;font-weight:400;color:#000;margin-bottom:3px;">'+nome+'</div>'
+      +'<div style="font-size:16px;font-weight:700;color:#000;margin-bottom:3px;">'+nome+'</div>'
       +'<div style="font-size:12px;color:#444;margin-bottom:8px;">'+funcao+'</div>'
       +'<div style="width:50px;height:2px;background:#000;margin-bottom:10px;"></div>'
       +'<table cellpadding="0" cellspacing="0" border="0">'+ctRows+'</table>'
