@@ -147,13 +147,13 @@ var PHOTO_BRD  = 4;
 
 // BLOCO 2 — DADOS
 var DATA_X     = 248;
-var NAME_Y     = 43;
+var NAME_Y     = 33;
 var NAME_SZ    = 14;
-var CARGO_Y    = 58;
-var CARGO_SZ   = 9;
-var DIV_Y      = 69;        // divider line
+var CARGO_Y    = 47;
+var CARGO_SZ   = 11;
+var DIV_Y      = 57;        // divider line
 var CT_X       = DATA_X;
-var CT_Y0      = 87;
+var CT_Y0      = 74;
 var CT_LH      = 24;
 var ICON_SZ    = 15;
 
@@ -432,39 +432,53 @@ function copyHtml(){
   if(fax)  contacts.push({t:"phone",v:fax});
   if(site) contacts.push({t:"web",  v:site});
 
-  var rows="";
-  for(var i=0;i<contacts.length;i++){
-    var c=contacts[i];
-    rows+="<tr><td style='padding-right:10px;vertical-align:middle;'>"
-        +"<div style='width:18px;height:18px;border-radius:50%;background:#000;display:inline-flex;align-items:center;justify-content:center;'>"
-        +"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='11' height='11'>"
-        +"<path d='"+IPATH[c.t]+"' fill='#fff'/></svg></div></td>"
-        +"<td style='font-family:Helvetica,Arial,sans-serif;font-size:15px;color:#333;line-height:28px;'>"+c.v+"</td></tr>";
+  // Icon as inline SVG data URI (works in Gmail)
+  function iconSvg(type){
+    var p=IPATH[type];
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="11" height="11"><circle cx="12" cy="12" r="12" fill="#000"/><path d="'+p+'" fill="#fff"/></svg>';
+    return 'data:image/svg+xml;base64,'+btoa(svg);
   }
 
-  var ph=photoDataUrl
-    ?"<img src='"+photoDataUrl+"' width='140' height='140' style='border-radius:50%;border:6px solid #000;display:block;'>"
-    :"<div style='width:140px;height:140px;border-radius:50%;background:#d0d0d0;border:6px solid #000;'></div>";
+  var ctRows='';
+  for(var i=0;i<contacts.length;i++){
+    var c2=contacts[i];
+    var isLast=(i===contacts.length-1);
+    ctRows+='<tr>'
+      +'<td align="center" style="width:20px;vertical-align:middle;padding-right:8px;">'
+      +'<img src="'+iconSvg(c2.t)+'" width="18" height="18" style="display:block;border-radius:50%;">'
+      +(!isLast?'<div style="width:1px;height:8px;background:#000;margin:0 auto;"></div>':'')
+      +'</td>'
+      +'<td style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#333;white-space:nowrap;padding:2px 0;">'+c2.v+'</td>'
+      +'</tr>';
+  }
 
-  var html="<table cellpadding='0' cellspacing='0' border='0'"
-    +" style='background:#ffffff;padding:30px;border-collapse:collapse;background-image:url(https://www.independentbrazil.com/assets/wm.png);background-size:cover;'>"
-    +"<tr valign='middle'>"
-    +"<td style='padding-right:40px;'>"+ph+"</td>"
-    +"<td style='padding-right:40px;vertical-align:top;'>"
-    +"<div style='font-family:Helvetica,Arial,sans-serif;font-size:28px;font-weight:400;color:#000;line-height:1.1;'>"+nome+"</div>"
-    +"<div style='font-family:Helvetica,Arial,sans-serif;font-size:16px;color:#444;margin-bottom:8px;'>"+funcao+"</div>"
-    +"<div style='width:60px;height:3px;background:#000;margin:8px 0 12px;'></div>"
-    +"<table cellpadding='0' cellspacing='0'>"+rows+"</table></td>"
-    +"<td style='vertical-align:middle;'>"
-    +"<table cellpadding='0' cellspacing='0'><tr valign='middle'>"
-    +"<td style='padding-right:18px;'><img src='"+LOGO_SRC+"' width='110' height='110' style='display:block;'></td>"
-    +"<td style='font-family:Helvetica,Arial,sans-serif;font-size:22px;font-weight:500;color:#000;line-height:1.2;max-width:220px;'>"
-    +"We connect people,<br>we connect business.</td>"
-    +"</tr></table></td>"
-    +"</tr></table>";
+  var photoCell = photoDataUrl
+    ? '<img src="'+photoDataUrl+'" width="111" height="111" style="border-radius:50%;border:4px solid #000;display:block;">'
+    : '<div style="width:111px;height:111px;border-radius:50%;background:#d0d0d0;border:4px solid #000;"></div>';
+
+  var html=
+    '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#ffffff;font-family:Helvetica,Arial,sans-serif;">'
+    +'<tr valign="middle">'
+    +'<td style="padding:15px 20px 15px 15px;">'+photoCell+'</td>'
+    +'<td style="padding:15px 30px 15px 0;vertical-align:top;">'
+      +'<div style="font-size:16px;font-weight:400;color:#000;margin-bottom:3px;">'+nome+'</div>'
+      +'<div style="font-size:12px;color:#444;margin-bottom:8px;">'+funcao+'</div>'
+      +'<div style="width:50px;height:2px;background:#000;margin-bottom:10px;"></div>'
+      +'<table cellpadding="0" cellspacing="0" border="0">'+ctRows+'</table>'
+    +'</td>'
+    +'<td style="padding:15px 30px 15px 0;vertical-align:middle;">'
+      +'<img src="'+LOGO_SRC+'" width="76" height="76" style="display:block;">'
+    +'</td>'
+    +'<td style="padding:15px 15px 15px 0;vertical-align:middle;">'
+      +'<div style="font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:400;color:#000;line-height:1.15;max-width:200px;">'
+      +'We<br>connect<br>people,<br>we connect<br>business.'
+      +'</div>'
+    +'</td>'
+    +'</tr>'
+    +'</table>';
 
   navigator.clipboard.writeText(html)
-    .then(function(){showNotif("HTML copiado!");})
+    .then(function(){showNotif("HTML copiado! No Gmail: Configurações → Ver todas → Assinatura → Nova → Cole com Ctrl+V");})
     .catch(function(){
       var t=document.createElement("textarea");
       t.value=html;document.body.appendChild(t);t.select();
