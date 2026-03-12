@@ -415,106 +415,57 @@ function downloadPNG(){
 }
 
 function copyHtml(){
-  var nome  =document.getElementById("fNome").value.trim()  ||"Nome";
-  var funcao=document.getElementById("fFuncao").value.trim()||"Cargo";
-  var tel   =document.getElementById("fTel").value.trim();
-  var cel   =document.getElementById("fCel").value.trim();
-  var email =document.getElementById("fEmail").value.trim();
-  var fax   =document.getElementById("fFax").value.trim();
-  var site  =document.getElementById("fSite").value.trim();
-  var contacts=[];
-  if(cel)  contacts.push({t:"whatsapp",v:cel});
-  if(tel)  contacts.push({t:"phone",v:tel});
-  if(email)contacts.push({t:"email",v:email});
-  if(fax)  contacts.push({t:"phone",v:fax});
-  if(site) contacts.push({t:"web",  v:site});
+  // Renderiza o canvas atualizado e abre janela com PNG para colar no Gmail
+  renderSig();
+  setTimeout(function(){
+    var canvas = document.getElementById("sigCanvas");
+    var pngUrl = canvas.toDataURL("image/png");
 
-  // Icon as inline SVG data URI (works in Gmail)
-  function iconSvg(type){
-    var p=IPATH[type];
-    /* ── fundo verde para WhatsApp no HTML exportado ── */
-    var bg="#000";
-    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="11" height="11"><circle cx="12" cy="12" r="12" fill="'+bg+'"/><path d="'+p+'" fill="#fff"/></svg>';
-    return 'data:image/svg+xml;base64,'+btoa(svg);
-  }
-
-  var ctRows='';
-  for(var i=0;i<contacts.length;i++){
-    var c2=contacts[i];
-    var isLast=(i===contacts.length-1);
-    ctRows+='<tr>'
-      +'<td align="center" style="width:20px;vertical-align:middle;padding-right:8px;">'
-      +'<img src="'+iconSvg(c2.t)+'" width="18" height="18" style="display:block;border-radius:50%;">'
-      +(!isLast?'<div style="width:1px;height:8px;background:#000;margin:0 auto;"></div>':'')
-      +'</td>'
-      +'<td style="font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#333;white-space:nowrap;padding:2px 0;">'+c2.v+'</td>'
-      +'</tr>';
-  }
-
-  var photoCell = photoDataUrl
-    ? '<img src="'+photoDataUrl+'" width="111" height="111" style="border-radius:50%;border:4px solid #000;display:block;">'
-    : '<div style="width:111px;height:111px;border-radius:50%;background:#d0d0d0;border:4px solid #000;"></div>';
-
-  var html=
-    '<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;background:#ffffff;font-family:Helvetica,Arial,sans-serif;">'
-    +'<tr valign="middle">'
-    +'<td style="padding:15px 20px 15px 15px;">'+photoCell+'</td>'
-    +'<td style="padding:15px 30px 15px 0;vertical-align:top;">'
-      +'<div style="font-size:16px;font-weight:700;color:#000;margin-bottom:3px;">'+nome+'</div>'
-      +'<div style="font-size:12px;color:#444;margin-bottom:8px;">'+funcao+'</div>'
-      +'<div style="width:50px;height:2px;background:#000;margin-bottom:10px;"></div>'
-      +'<table cellpadding="0" cellspacing="0" border="0">'+ctRows+'</table>'
-    +'</td>'
-    +'<td style="padding:15px 30px 15px 0;vertical-align:middle;">'
-      +'<img src="'+LOGO_SRC+'" width="76" height="76" style="display:block;">'
-    +'</td>'
-    +'<td style="padding:15px 15px 15px 0;vertical-align:middle;">'
-      +'<div style="font-family:Helvetica,Arial,sans-serif;font-size:20px;font-weight:400;color:#000;line-height:1.15;max-width:200px;">'
-      +'We<br>connect<br>people,<br>we connect<br>business.'
-      +'</div>'
-    +'</td>'
-    +'</tr>'
-    +'</table>';
-
-  // Abre janela com assinatura renderizada para copiar como rich text
-  var win = window.open("","_blank","width=900,height=320");
-  win.document.write(
-    '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
-    '<style>'+
-    'body{margin:40px;font-family:Helvetica,Arial,sans-serif;background:#fff;}'+
-    '.instrucao{font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#555;margin-bottom:20px;padding:12px 16px;background:#f5f5f5;border-left:3px solid #111;}'+
-    '.instrucao strong{color:#111;}'+
-    '.instrucao ol{margin:8px 0 0 18px;line-height:1.8;}'+
-    '.sig-wrap{display:inline-block;border:1px dashed #ccc;padding:8px;}'+
-    '</style></head><body>'+
-    '<div class="instrucao">'+
-    '<strong>Como usar no Gmail:</strong>'+
-    '<ol>'+
-    '<li>Selecione a assinatura abaixo com <strong>Ctrl+A</strong> (ou clique e arraste)</li>'+
-    '<li>Copie com <strong>Ctrl+C</strong></li>'+
-    '<li>Abra o Gmail → ⚙️ Configurações → Ver todas as configurações → Assinatura</li>'+
-    '<li>Clique dentro da caixa de assinatura e cole com <strong>Ctrl+V</strong></li>'+
-    '</ol></div>'+
-    '<div class="sig-wrap" id="sig">'+html+'</div>'+
-    '<script>'+
-    'var sig=document.getElementById("sig");'+
-    'sig.addEventListener("click",function(){'+
-    '  var range=document.createRange();'+
-    '  range.selectNodeContents(sig);'+
-    '  var sel=window.getSelection();'+
-    '  sel.removeAllRanges();'+
-    '  sel.addRange(range);'+
-    '  try{document.execCommand("copy");alert("Assinatura copiada! Agora cole no Gmail com Ctrl+V.");}'+
-    '  catch(e){}'+
-    '});'+
-    'sig.title="Clique para selecionar e copiar";'+
-    'sig.style.cursor="pointer";'+
-    '<\/script>'+
-    '</body></html>'
-  );
-  win.document.close();
+    var win = window.open("","_blank","width=960,height=420");
+    win.document.write(
+      '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+      '<style>'+
+      'body{margin:0;font-family:Helvetica,Arial,sans-serif;background:#f5f5f5;}'+
+      '.top{background:#111;color:#fff;padding:16px 28px;font-size:13px;line-height:1.7;}'+
+      '.top strong{font-size:14px;display:block;margin-bottom:4px;}'+
+      '.top ol{margin:6px 0 0 18px;}'+
+      '.preview{background:#fff;padding:28px;display:inline-block;margin:24px 28px;border:1px solid #ddd;cursor:pointer;}'+
+      '.preview img{display:block;}'+
+      '.badge{display:inline-block;background:#25D366;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-left:8px;vertical-align:middle;}'+
+      '</style></head><body>'+
+      '<div class="top">'+
+      '<strong>✅ Como inserir no Gmail <span class="badge">PASSO A PASSO</span></strong>'+
+      '<ol>'+
+      '<li>Clique na assinatura abaixo — ela será <strong>copiada automaticamente</strong> como imagem</li>'+
+      '<li>Abra o <strong>Gmail → ⚙️ Configurações → Ver todas as configurações → Assinatura</strong></li>'+
+      '<li>Crie ou selecione uma assinatura, clique dentro da caixa e pressione <strong>Ctrl+V</strong></li>'+
+      '<li>Salve as alterações no final da página</li>'+
+      '</ol></div>'+
+      '<div class="preview" id="sig" title="Clique para copiar">'+
+      '<img src="'+pngUrl+'" style="max-width:100%;height:auto;">'+
+      '</div>'+
+      '<script>'+
+      'document.getElementById("sig").addEventListener("click",function(){'+
+      '  var img=this.querySelector("img");'+
+      '  var canvas=document.createElement("canvas");'+
+      '  canvas.width=img.naturalWidth; canvas.height=img.naturalHeight;'+
+      '  canvas.getContext("2d").drawImage(img,0,0);'+
+      '  canvas.toBlob(function(blob){'+
+      '    var item=new ClipboardItem({"image/png":blob});'+
+      '    navigator.clipboard.write([item]).then(function(){'+
+      '      document.getElementById("sig").style.outline="3px solid #25D366";'+
+      '      alert("✅ Imagem copiada! Agora cole com Ctrl+V no campo de assinatura do Gmail.");'+
+      '    }).catch(function(){'+
+      '      alert("Use Ctrl+C após clicar com botão direito na imagem para copiar.");'+
+      '    });'+
+      '  });'+
+      '});'+
+      '<\/script>'+
+      '</body></html>'
+    );
+    win.document.close();
+  }, 100);
 }
-
 function saveToGoogleDrive(){
   showNotif("Preparando...");
   renderSig();
