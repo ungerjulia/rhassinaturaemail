@@ -117,7 +117,7 @@ html { margin:0; padding:0; }
     </div>
     <div class="actions">
       <button class="btn btn-primary" onclick="downloadPNG()">&#11015; Baixar PNG</button>
-      <button class="btn btn-outline" onclick="copyHtml()">&#128203; Copiar HTML para Gmail</button>
+      <button class="btn btn-outline" onclick="copyHtml()">&#128203; Gerar Assinatura para Gmail</button>
       <button class="btn btn-drive"   onclick="saveToGoogleDrive()">&#9729; Salvar no Google Drive</button>
     </div>
   </div>
@@ -476,14 +476,43 @@ function copyHtml(){
     +'</tr>'
     +'</table>';
 
-  navigator.clipboard.writeText(html)
-    .then(function(){showNotif("HTML copiado! No Gmail: Configurações → Ver todas → Assinatura → Nova → Cole com Ctrl+V");})
-    .catch(function(){
-      var t=document.createElement("textarea");
-      t.value=html;document.body.appendChild(t);t.select();
-      document.execCommand("copy");document.body.removeChild(t);
-      showNotif("HTML copiado!");
-    });
+  // Abre janela com assinatura renderizada para copiar como rich text
+  var win = window.open("","_blank","width=900,height=320");
+  win.document.write(
+    '<!DOCTYPE html><html><head><meta charset="UTF-8">'+
+    '<style>'+
+    'body{margin:40px;font-family:Helvetica,Arial,sans-serif;background:#fff;}'+
+    '.instrucao{font-family:Helvetica,Arial,sans-serif;font-size:13px;color:#555;margin-bottom:20px;padding:12px 16px;background:#f5f5f5;border-left:3px solid #111;}'+
+    '.instrucao strong{color:#111;}'+
+    '.instrucao ol{margin:8px 0 0 18px;line-height:1.8;}'+
+    '.sig-wrap{display:inline-block;border:1px dashed #ccc;padding:8px;}'+
+    '</style></head><body>'+
+    '<div class="instrucao">'+
+    '<strong>Como usar no Gmail:</strong>'+
+    '<ol>'+
+    '<li>Selecione a assinatura abaixo com <strong>Ctrl+A</strong> (ou clique e arraste)</li>'+
+    '<li>Copie com <strong>Ctrl+C</strong></li>'+
+    '<li>Abra o Gmail → ⚙️ Configurações → Ver todas as configurações → Assinatura</li>'+
+    '<li>Clique dentro da caixa de assinatura e cole com <strong>Ctrl+V</strong></li>'+
+    '</ol></div>'+
+    '<div class="sig-wrap" id="sig">'+html+'</div>'+
+    '<script>'+
+    'var sig=document.getElementById("sig");'+
+    'sig.addEventListener("click",function(){'+
+    '  var range=document.createRange();'+
+    '  range.selectNodeContents(sig);'+
+    '  var sel=window.getSelection();'+
+    '  sel.removeAllRanges();'+
+    '  sel.addRange(range);'+
+    '  try{document.execCommand("copy");alert("Assinatura copiada! Agora cole no Gmail com Ctrl+V.");}'+
+    '  catch(e){}'+
+    '});'+
+    'sig.title="Clique para selecionar e copiar";'+
+    'sig.style.cursor="pointer";'+
+    '<\/script>'+
+    '</body></html>'
+  );
+  win.document.close();
 }
 
 function saveToGoogleDrive(){
